@@ -11,6 +11,7 @@ app.use(express.static('public'));
 app.set('view-engine', 'ejs');
 
 var items = [];
+var workItems = [];
 
 app.get("/", function(req,res){
   let today = new Date();
@@ -26,14 +27,33 @@ app.get("/", function(req,res){
   const df = new Intl.DateTimeFormat('fr', {weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC'});
   var day = df.format(today);
 
-  res.render("list.ejs", {kindOfDay: day, newListItems:items});
+  res.render("list.ejs", {listTitle: day, newListItems:items});
+});
+
+app.get("/work", function(req,res){
+
+  res.render("list.ejs", {listTitle: "Travail", newListItems:workItems});
+
+});
+
+app.get("/about", function(req,res){
+
+  res.render("about.ejs");
+
 });
 
 app.post("/", function(req,res){
   var item = req.body.newItem;
-  items.push(item);
 
-  res.redirect("/");
+  if(req.body.list==="Travail"){
+    workItems.push(item);
+    res.redirect("/work");
+  }
+  else{
+    items.push(item);
+    res.redirect("/");
+  }
+
 });
 
 app.listen(3000, function(){
